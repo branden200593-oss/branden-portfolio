@@ -1,7 +1,7 @@
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 fs.mkdirSync(".artifacts", { recursive: true });
-for (const suite of ["browser", "routes", "studio", "editorial"]) {
+for (const suite of ["browser", "routes", "layout", "studio", "editorial"]) {
   const result = spawnSync(process.execPath, [`tests/${suite}.cjs`], {
     encoding: "utf8",
     env: process.env,

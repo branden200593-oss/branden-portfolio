@@ -35,12 +35,16 @@ export const projects: Project[] = [
     gallery: [
       {
         src: "/images/eswatini.webp",
+        width: 1600,
+        height: 1200,
         alt: "史瓦帝尼國際教育服務現場紀錄",
         credit: "",
         approved: true,
       },
       {
         src: "/images/classroom.webp",
+        width: 1108,
+        height: 1476,
         alt: "Branden 在史瓦帝尼教室進行資訊教育教學",
         credit: "",
         approved: true,
@@ -83,6 +87,8 @@ export const projects: Project[] = [
     gallery: [
       {
         src: "/images/sparks2.webp",
+        width: 1600,
+        height: 900,
         alt: "教院小火花活動現場紀錄",
         credit: "",
         approved: true,
@@ -125,6 +131,8 @@ export const projects: Project[] = [
     gallery: [
       {
         src: "/images/sustainability2.webp",
+        width: 1134,
+        height: 1444,
         alt: "校園永續行動現場紀錄",
         credit: "",
         approved: true,

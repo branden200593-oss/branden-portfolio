@@ -15,6 +15,7 @@ npm run test:hmr
 npm run preview -- --port 4173 --strictPort
 BASE_URL=http://127.0.0.1:4173 npm run test:browser
 BASE_URL=http://127.0.0.1:4173 npm run test:routes
+BASE_URL=http://127.0.0.1:4173 node tests/layout.cjs
 BASE_URL=http://127.0.0.1:4173 npm run test:studio
 npm run test:editorial
 ```

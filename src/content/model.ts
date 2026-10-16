@@ -1,6 +1,13 @@
 export type Project = {
   featured?: boolean;
-  gallery?: { src: string; alt: string; credit: string; approved: boolean }[];
+  gallery?: {
+    src: string;
+    alt: string;
+    credit: string;
+    approved: boolean;
+    width?: number;
+    height?: number;
+  }[];
   id: string;
   slug: string;
   name: string;
@@ -113,11 +120,24 @@ export function validateProjects(value: unknown): Project[] {
         image.approved !== true
       )
         throw new Error("圖集必須包含替代文字及已確認的使用授權。");
+      const width = image.width ?? 1200;
+      const height = image.height ?? 900;
+      if (
+        !Number.isInteger(width) ||
+        !Number.isInteger(height) ||
+        (width as number) < 1 ||
+        (height as number) < 1 ||
+        (width as number) > 12000 ||
+        (height as number) > 12000
+      )
+        throw new Error("圖集尺寸必須是 1–12000 的整數。");
       return {
         src: image.src,
         alt: image.alt,
         credit: image.credit,
         approved: true,
+        width: width as number,
+        height: height as number,
       };
     });
     if (p.featured !== undefined && typeof p.featured !== "boolean")

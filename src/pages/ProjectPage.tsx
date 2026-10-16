@@ -109,8 +109,8 @@ export default function ProjectPage() {
                     src={photographs[index].src}
                     alt={photographs[index].alt}
                     loading="lazy"
-                    width="1200"
-                    height="900"
+                    width={photographs[index].width ?? 1200}
+                    height={photographs[index].height ?? 900}
                   />
                   <figcaption>
                     <span>

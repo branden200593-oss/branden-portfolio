@@ -40,3 +40,7 @@
   Browser proxy CA import was rejected by auto-review; do not retry/disable TLS.
   External checks used an authenticated official edge-access session and
   certificate-verified API transport; browser-side TLS was not independently tested.
+- Preserve actual gallery image dimensions. tests/layout.cjs delays real image
+  responses and verifies no next-story position shift after decode at 4 widths.
+  WebKit route navigation must use normal clicks with stable font/scroll layout;
+  do not force clicks, add blind retries or skip engine assertions.

@@ -61,3 +61,15 @@ The local studio remains browser-local, not a shared authenticated CMS.
 Only previously public site photos are retained. Additional Drive photos remain
 unimported and require authorization review; draft candidates contain no
 invented dates, roles or outcomes. See MATERIALS.md.
+
+## Follow-up stability fix
+
+A subsequent WebKit run exposed an intermittent next-story click/navigation
+failure. Source inspection found portrait/landscape gallery images all declared
+as 1200×900, so delayed decoding could move following content. Gallery metadata
+now retains each actual image's width/height, strictly validated and backward
+compatible with existing studio backups. A delayed-image regression checks the
+next-story position before and after decoding at all four widths. Route tests
+wait for fonts and place the actual link in view before an ordinary click, then
+assert the expected URL and heading, capturing diagnostic evidence on failure.
+No forced clicks, test retries or skipped WebKit assertions were introduced.

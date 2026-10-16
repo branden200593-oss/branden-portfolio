@@ -35,12 +35,48 @@ const assert = require("node:assert/strict");
           ),
           "Case overflow " + width + " " + slug,
         );
-        await page.locator(".next-project").click();
         const expected =
           cases[(cases.findIndex((x) => x[0] === slug) + 1) % cases.length][1];
+        const nextSlug =
+          cases[(cases.findIndex((x) => x[0] === slug) + 1) % cases.length][0];
+        await page.evaluate(() => document.fonts.ready);
         await page
-          .getByRole("heading", { name: expected + ".", exact: true })
-          .waitFor();
+          .locator(".next-project")
+          .evaluate((element) =>
+            element.scrollIntoView({ block: "center", behavior: "instant" }),
+          );
+        await page.waitForFunction(() => {
+          const rect = document
+            .querySelector(".next-project")
+            .getBoundingClientRect();
+          return rect.top >= 0 && rect.bottom <= innerHeight;
+        });
+        try {
+          await page.locator(".next-project").click();
+          await page.waitForURL(`**/projects/${nextSlug}/`, { timeout: 10000 });
+          await page
+            .getByRole("heading", { name: expected + ".", exact: true })
+            .waitFor();
+        } catch (error) {
+          console.error(
+            JSON.stringify({
+              width,
+              slug,
+              expected,
+              url: page.url(),
+              heading: await page.locator("h1").allTextContents(),
+              nextHref: await page
+                .locator(".next-project")
+                .getAttribute("href"),
+              errors,
+            }),
+          );
+          await page.screenshot({
+            path: `.artifacts/route-failure-${process.env.BROWSER_ENGINE || "chromium"}-${width}-${slug}.png`,
+            fullPage: true,
+          });
+          throw error;
+        }
       }
       await page.goto(root + "/missing-page/", { waitUntil: "networkidle" });
       await page
