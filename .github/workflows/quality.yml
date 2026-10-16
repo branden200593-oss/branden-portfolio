@@ -20,8 +20,8 @@ jobs:
     env:
       BROWSER_ENGINE: ${{ matrix.engine }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -47,13 +47,11 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           node scripts/wait-http.cjs "$BASE_URL/"
-          npm run test:browser
-          npm run test:routes
-          npm run test:studio
-          npm run test:editorial
-      - uses: actions/upload-artifact@v4
+          node scripts/ci-browser-suite.cjs
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: browser-${{ matrix.engine }}
           path: .artifacts/
+          include-hidden-files: true
           retention-days: 7
