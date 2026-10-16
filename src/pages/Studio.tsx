@@ -472,6 +472,16 @@ export default function Studio() {
                     </select>
                   </label>
                 </div>
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={form.featured !== false}
+                    onChange={(event) =>
+                      update("featured", event.target.checked)
+                    }
+                  />
+                  首頁精選（最多展示四件，其餘仍可在作品庫閱讀）
+                </label>
                 <fieldset className="image-field">
                   <legend>封面圖片</legend>
                   <p className="field-help">

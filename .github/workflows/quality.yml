@@ -1,0 +1,59 @@
+name: Portfolio quality
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    env:
+      BROWSER_ENGINE: ${{ matrix.engine }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Verify live editing
+        if: matrix.engine == 'chromium'
+        run: |
+          mkdir -p .artifacts
+          npm run dev -- --port 5173 --strictPort > .artifacts/dev.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          node scripts/wait-http.cjs http://127.0.0.1:5173/
+          npm run test:hmr
+      - name: Lint, typecheck and production build
+        run: npm run build
+      - name: Verify built website
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: |
+          mkdir -p .artifacts
+          npm run preview -- --port 4173 --strictPort > .artifacts/preview.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          node scripts/wait-http.cjs "$BASE_URL/"
+          npm run test:browser
+          npm run test:routes
+          npm run test:studio
+          npm run test:editorial
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-${{ matrix.engine }}
+          path: .artifacts/
+          retention-days: 7

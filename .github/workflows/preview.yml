@@ -1,0 +1,27 @@
+name: Netlify rendered preview
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Wait for the exact deployed commit and render it
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/verify-netlify-preview.cjs

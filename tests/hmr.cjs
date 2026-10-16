@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+const { launch } = require("./browser-engine.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 
@@ -10,11 +10,7 @@ const fs = require("node:fs/promises");
       paths.map(async (p) => [p, await fs.readFile(p, "utf8")]),
     ),
   );
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || "/usr/bin/chromium",
-    headless: true,
-    args: ["--no-sandbox"],
-  });
+  const browser = await launch();
   async function restore() {
     for (const [p, text] of originals) {
       if ((await fs.readFile(p, "utf8")) !== text) await fs.writeFile(p, text);
@@ -104,13 +100,14 @@ const fs = require("node:fs/promises");
     assert.equal(await title.textContent(), "Sparks of Education");
 
     const content = originals.get(paths[2]);
-    const phrase = "connection, and shared experiences.";
+    const phrase =
+      "以午間交流與永續野餐，回應教育學院學生對歸屬感與跨系連結的需求。";
     assert.ok(content.includes(phrase));
     await fs.writeFile(paths[2], content.replace(phrase, phrase + " "));
     await page.waitForFunction(() =>
       document
         .querySelector(".showcase-bottom p")
-        ?.textContent.endsWith("experiences. "),
+        ?.textContent.endsWith("需求。 "),
     );
     assert.equal(await title.textContent(), "Sparks of Education");
 
@@ -127,7 +124,7 @@ const fs = require("node:fs/promises");
           ?.hasAttribute("data-hmr-probe") &&
         document
           .querySelector(".showcase-bottom p")
-          ?.textContent.endsWith("experiences."),
+          ?.textContent.endsWith("需求。"),
     );
     assert.equal(
       navigations,

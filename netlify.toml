@@ -7,7 +7,7 @@ to = "/index.html"
 status = 200
 
 [build.environment]
-NODE_VERSION = "22"
+NODE_VERSION = "24"
 [[headers]]
 for = "/*"
 [headers.values]
@@ -15,3 +15,8 @@ X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 X-Frame-Options = "DENY"
 X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"

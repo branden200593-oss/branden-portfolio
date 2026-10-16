@@ -5,10 +5,12 @@ import App from "./App";
 import PortfolioProvider from "./store/PortfolioProvider";
 import ProjectPage from "./pages/ProjectPage";
 import NotFound from "./pages/NotFound";
-import "@fontsource-variable/dm-sans";
-import "@fontsource-variable/manrope";
-import "@fontsource/playfair-display/latin-500-italic.css";
+import About from "./pages/About";
+import Projects from "./pages/Projects";
+import Experience from "./pages/Experience";
+import "./fonts.css";
 import "./style.css";
+import "./design-system.css";
 const Studio = lazy(() => import("./pages/Studio"));
 function RoutePosition() {
   const { pathname, hash } = useLocation();
@@ -35,6 +37,9 @@ createRoot(document.getElementById("root")!).render(
       >
         <Routes>
           <Route path="/" element={<App />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/experience" element={<Experience />} />
           <Route path="/projects/:slug" element={<ProjectPage />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="*" element={<NotFound />} />

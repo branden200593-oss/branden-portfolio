@@ -1,11 +1,8 @@
-const { chromium } = require("playwright");
+const { launch } = require("./browser-engine.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 (async () => {
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || "/usr/bin/chromium",
-    args: ["--no-sandbox"],
-  });
+  const browser = await launch();
   try {
     const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
@@ -19,7 +16,7 @@ const fs = require("node:fs/promises");
     await page.goto(root + "/studio/", { waitUntil: "networkidle" });
     await page.getByLabel("作品中文名稱", { exact: true }).waitFor();
     assert.equal(await page.locator("input[type=password]").count(), 0);
-    assert.equal(await page.locator(".studio-list-item").count(), 3);
+    assert.equal(await page.locator(".studio-list-item").count(), 7);
     await page.getByRole("button", { name: "新增作品", exact: true }).click();
     await page.getByLabel("作品中文名稱", { exact: true }).fill("測試作品");
     await page.getByLabel("作品英文名稱", { exact: true }).fill("Test Project");
@@ -55,11 +52,13 @@ const fs = require("node:fs/promises");
       .getByRole("alert")
       .filter({ hasText: "確認可公開使用" })
       .waitFor();
-    assert.equal(await page.locator(".studio-list-item").count(), 3);
+    assert.equal(await page.locator(".studio-list-item").count(), 7);
     await page
       .getByLabel("圖片替代文字", { exact: true })
       .fill("A plain test rectangle");
-    await page.getByRole("checkbox").check();
+    await page
+      .getByLabel("我已確認這張照片可公開使用", { exact: false })
+      .check();
     await page
       .getByRole("button", { name: "儲存至此瀏覽器", exact: true })
       .click();
@@ -67,15 +66,15 @@ const fs = require("node:fs/promises");
       .getByRole("status")
       .filter({ hasText: "已儲存至此瀏覽器" })
       .waitFor();
-    assert.equal(await page.locator(".studio-list-item").count(), 4);
+    assert.equal(await page.locator(".studio-list-item").count(), 8);
     await page.reload({ waitUntil: "networkidle" });
-    assert.equal(await page.locator(".studio-list-item").count(), 4);
+    assert.equal(await page.locator(".studio-list-item").count(), 8);
     await page
       .getByRole("button", { name: "上移 測試作品", exact: true })
       .click();
     await page.getByRole("status").filter({ hasText: "順序已儲存" }).waitFor();
     assert.ok(
-      (await page.locator(".studio-list-item").nth(2).textContent()).includes(
+      (await page.locator(".studio-list-item").nth(6).textContent()).includes(
         "測試作品",
       ),
     );
@@ -116,11 +115,11 @@ const fs = require("node:fs/promises");
     const download = await downloadWait;
     const backup = JSON.parse(await fs.readFile(await download.path(), "utf8"));
     assert.equal(backup.schemaVersion, 1);
-    assert.equal(backup.projects.length, 4);
+    assert.equal(backup.projects.length, 8);
     assert.ok(
       backup.projects
         .find((p) => p.slug === "test-project")
-        .cover.startsWith("data:image/webp;base64,"),
+        .cover.match(/^data:image\/(webp|png);base64,/),
     );
     const bad = structuredClone(backup);
     bad.projects[0].cover = 'data:image/svg+xml,<svg onload="alert(1)"/>';
@@ -133,7 +132,7 @@ const fs = require("node:fs/promises");
       .getByRole("alert")
       .filter({ hasText: "不接受外部連結或 SVG" })
       .waitFor();
-    assert.equal(await page.locator(".studio-list-item").count(), 4);
+    assert.equal(await page.locator(".studio-list-item").count(), 8);
     while (await page.getByRole("button", { name: /^隱藏 / }).count()) {
       const remaining = await page
         .getByRole("button", { name: /^隱藏 / })
@@ -164,17 +163,15 @@ const fs = require("node:fs/promises");
       .getByRole("status")
       .filter({ hasText: "已恢復網站原始內容" })
       .waitFor();
-    assert.equal(await page.locator(".studio-list-item").count(), 3);
+    assert.equal(await page.locator(".studio-list-item").count(), 7);
     page.once("dialog", (dialog) => dialog.accept());
-    await page
-      .locator('input[accept="application/json,.json"]')
-      .setInputFiles({
-        name: "valid.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify(backup)),
-      });
+    await page.locator('input[accept="application/json,.json"]').setInputFiles({
+      name: "valid.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
     await page.getByRole("status").filter({ hasText: "備份已匯入" }).waitFor();
-    assert.equal(await page.locator(".studio-list-item").count(), 4);
+    assert.equal(await page.locator(".studio-list-item").count(), 8);
     await page.getByLabel("作品標語", { exact: true }).fill("An unsaved note");
     page.once("dialog", (dialog) => dialog.dismiss());
     await page

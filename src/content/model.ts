@@ -1,4 +1,6 @@
 export type Project = {
+  featured?: boolean;
+  gallery?: { src: string; alt: string; credit: string; approved: boolean }[];
   id: string;
   slug: string;
   name: string;
@@ -87,8 +89,43 @@ export function validateProjects(value: unknown): Project[] {
         throw new Error(`${key} 請使用文字段落，最多 12 段。`);
       lists[key] = list;
     }
+    const galleryRaw = p.gallery ?? [];
+    if (!Array.isArray(galleryRaw) || galleryRaw.length > 12)
+      throw new Error("圖集最多 12 張圖片。");
+    const gallery = galleryRaw.map((raw: unknown) => {
+      if (!raw || typeof raw !== "object") throw new Error("圖集格式不正確。");
+      const image = raw as Record<string, unknown>;
+      if (
+        typeof image.src !== "string" ||
+        image.src.length > 2_500_000 ||
+        (!/^data:image\/(?:webp|png|jpeg);base64,[a-zA-Z0-9+/=]+$/.test(
+          image.src,
+        ) &&
+          !/^\/images\/[a-zA-Z0-9/_-]+\.(?:webp|png|jpg|jpeg)$/.test(image.src))
+      )
+        throw new Error("圖集圖片來源不正確。");
+      if (
+        typeof image.alt !== "string" ||
+        !image.alt.trim() ||
+        image.alt.length > 240 ||
+        typeof image.credit !== "string" ||
+        image.credit.length > 240 ||
+        image.approved !== true
+      )
+        throw new Error("圖集必須包含替代文字及已確認的使用授權。");
+      return {
+        src: image.src,
+        alt: image.alt,
+        credit: image.credit,
+        approved: true,
+      };
+    });
+    if (p.featured !== undefined && typeof p.featured !== "boolean")
+      throw new Error("精選狀態不正確。");
     // Construct an allowlisted record instead of retaining arbitrary imported properties.
     return {
+      gallery,
+      featured: p.featured !== false,
       id: p.id as string,
       slug: p.slug as string,
       name: p.name as string,

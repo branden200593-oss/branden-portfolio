@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { PortfolioContext } from "./context";
 import { projects as seedProjects } from "../content/projects";
+import { drafts as seedDrafts } from "../content/drafts";
 import { validateProjects, type Project } from "../content/model";
 import { readDrafts, writeDrafts } from "./database";
 
@@ -45,7 +46,7 @@ export default function PortfolioProvider({
   return (
     <PortfolioContext.Provider
       value={{
-        projects: drafts ?? seedProjects,
+        projects: drafts ?? [...seedProjects, ...seedDrafts],
         local: drafts !== null,
         loading,
         storageError,

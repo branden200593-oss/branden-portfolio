@@ -1,3 +1,24 @@
+# Dark Editorial redesign — current, 2026-10-16
+
+Existing Vite code preserved on codex/dark-editorial. Shared dark design system,
+four self-hosted fonts, actual rendered-font checks, Home, About, project library,
+Experience/year filters, 3 photographic cases, retained 3D carousel/local studio.
+Seven records: 3 published cases and 4 hidden candidate drafts. No new Drive
+photos introduced. Original Drop production remains separate and preserved.
+
+Local build/lint/types, responsive Chromium, case routes, fonts/images, HMR and
+studio tests passed. WebKit download is blocked; not represented as tested.
+GitHub CI definitions are prepared; execution and Git-linked Netlify CD require
+actual remote verification. Netlify official OAuth succeeded; existing site has
+no repository link or GitHub account integration. See docs/DEPLOYMENT.md.
+
+Preview delivery must be based on an actual successful upload and browser check;
+no production replacement is authorized before owner review.
+
+---
+
+The following is historical and may describe superseded environment limitations.
+
 # Current status — complete-site build, 2026-10-16
 
 Homepage preserved; three independent case pages, browser-local draft studio,

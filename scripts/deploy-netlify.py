@@ -4,6 +4,7 @@ API file protocol and branch-alias behavior follow Netlify OpenAPI + CLI.
 Credentials are read only from the environment and never logged or persisted.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -47,6 +48,10 @@ def main():
     print('Existing Netlify site verified: ' + SITE_NAME, flush=True)
     if args.check:
         return
+    original_production = (site.get('published_deploy') or {}).get('id')
+    production_branch = (site.get('build_settings') or {}).get('repo_branch')
+    if production_branch == BRANCH:
+        raise RuntimeError('Review alias matches production branch; refusing to deploy.')
     root = Path(__file__).resolve().parents[1] / 'dist'
     if not (root / 'index.html').is_file() or not (root / '_headers').is_file() or not (root / '_redirects').is_file():
         raise RuntimeError('Build output or security/routing files are missing. Run npm run build first.')
@@ -67,11 +72,15 @@ def main():
     deploy = api('POST', f'/sites/{SITE_ID}/deploys?title=BRANDEN%20review',
                  {'files': manifest, 'draft': False, 'branch': BRANCH})
     deploy_id = deploy['id']
-    for digest in deploy.get('required', []):
+    def upload(digest):
         if digest not in by_digest:
             raise RuntimeError('Netlify requested an unknown artifact digest.')
         path, file = by_digest[digest]
         api('PUT', f'/deploys/{deploy_id}/files/{quote(path, safe="/")}', file.read_bytes(), 'application/octet-stream')
+    required = deploy.get('required', [])
+    print(f'Uploading {len(required)} build artifacts to review alias only.', flush=True)
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        list(pool.map(upload, required))
     for attempt in range(90):
         deploy = api('GET', f'/sites/{SITE_ID}/deploys/{deploy_id}')
         if deploy.get('state') == 'ready':
@@ -85,10 +94,14 @@ def main():
         raise RuntimeError('Netlify readiness timeout. Do not report deployment success.')
     if deploy.get('branch') != BRANCH:
         raise RuntimeError('Deployment branch differs from the requested review alias.')
+    current_site = api('GET', f'/sites/{SITE_ID}')
+    if (current_site.get('published_deploy') or {}).get('id') != original_production:
+        raise RuntimeError('Published production changed unexpectedly; do not report the review deploy as safe.')
     result = {'site_id': SITE_ID, 'deploy_id': deploy_id, 'branch': BRANCH,
               'state': deploy['state'], 'unique_url': deploy.get('deploy_ssl_url'),
               'review_url': f'https://{BRANCH}--{SITE_NAME}.netlify.app',
-              'public_access_changed': False, 'production_replaced': False}
+              'public_access_changed': False, 'production_replaced': False,
+              'preserved_production_deploy': original_production}
     out = root.parent / '.artifacts'
     out.mkdir(exist_ok=True)
     (out / 'netlify-deploy.json').write_text(json.dumps(result, indent=2))

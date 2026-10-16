@@ -30,18 +30,19 @@ export default function SiteHeader() {
           className={menu ? "open" : ""}
         >
           {[
-            ["work", "WORK"],
-            ["about", "ABOUT"],
-            ["journey", "JOURNEY"],
-            ["contact", "CONTACT"],
-          ].map(([id, text]) => (
-            <a
-              key={id}
-              href={`${home ? "" : "/"}#${id}`}
+            ["/projects/", "WORK"],
+            ["/about/", "ABOUT"],
+            ["/experience/", "JOURNEY"],
+            ["/#contact", "CONTACT"],
+          ].map(([path, text]) => (
+            <Link
+              key={path}
+              to={path}
+              aria-current={pathname === path ? "page" : undefined}
               onClick={() => setMenu(false)}
             >
               {text}
-            </a>
+            </Link>
           ))}
         </nav>
         <button

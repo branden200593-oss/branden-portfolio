@@ -10,11 +10,15 @@ import { Link } from "react-router-dom";
 import { usePortfolio } from "./store/context";
 import SiteHeader from "./components/SiteHeader";
 import LocalNotice from "./components/LocalNotice";
+import { journey } from "./content/journey";
 
 export default function App() {
   const [active, setActive] = useState(0);
+  const [copyStatus, setCopyStatus] = useState("");
   const { projects: allProjects } = usePortfolio();
-  const projects = allProjects.filter((p) => p.status === "published");
+  const projects = allProjects
+    .filter((p) => p.status === "published" && p.featured !== false)
+    .slice(0, 4);
   const reduce = useReducedMotion();
   const spot = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -66,14 +70,14 @@ export default function App() {
             aria-hidden="true"
             style={{ y: reduce ? 0 : parallax }}
           >
-            {projects[0]?.cover && projects[0].imageApproved && (
-              <img
-                className="hero-photo"
-                src={projects[0].cover}
-                alt=""
-                fetchPriority="high"
-              />
-            )}
+            <img
+              className="hero-photo"
+              src="/images/hero.webp"
+              alt=""
+              width="1600"
+              height="1067"
+              fetchPriority="high"
+            />
             <div className="hero-glow" />
             <div className="hero-disc" />
             <div className="hero-silhouette" />
@@ -94,9 +98,9 @@ export default function App() {
               <br />
               <em>beyond</em> boundaries<span className="period">.</span>
             </h1>
+            <p className="hero-cn">以教育回應差異，用行動連結世界。</p>
             <p className="hero-intro">
-              Connecting education, sustainability, and social innovation
-              through real-world experiences.
+              Education. Sustainability. Human connection.
             </p>
             <a className="pill" href="#work">
               EXPLORE SELECTED WORK <ArrowUpRight size={17} />
@@ -111,7 +115,7 @@ export default function App() {
           </div>
         </section>
         <section className="intro-band" id="work">
-          <div className="small-label">01 / SELECTED WORK</div>
+          <div className="small-label">01 / BRANDEN LEE 李好</div>
           <div className="intro-band-copy">
             <h2>
               Ideas become meaningful
@@ -119,9 +123,11 @@ export default function App() {
               when they meet <em>people.</em>
             </h2>
             <p>
-              A collection of projects at the intersection of education,
-              community, and a more sustainable future.
+              我是李好，就讀國立清華大學教育學院。從跨文化教室到校園社群，關注教育創新、國際教育、永續發展與社會創新，探索讓學習與生活更靠近的方法。
             </p>
+            <Link className="text-link" to="/about/">
+              MEET BRANDEN <ArrowUpRight size={16} />
+            </Link>
           </div>
         </section>
         {project ? (
@@ -311,41 +317,52 @@ export default function App() {
             ))}
           </div>
           <p className="image-note">
-            Visual studies · original artwork placeholders. Project photography
-            to follow after review.
+            PHOTOGRAPHS FROM THE FIELD / 持續走進現場
           </p>
+          <Link className="text-link all-projects-link" to="/projects/">
+            VIEW ALL PROJECTS <ArrowUpRight size={16} />
+          </Link>
         </section>
         <section className="about" id="about">
           <span className="small-label">03 / A LITTLE ABOUT ME</span>
           <div className="about-grid">
             <div>
+              <p className="section-english">Always a learner.</p>
               <h2>
-                Curious about
+                從理解一個人，
                 <br />
-                <em>what's possible.</em>
+                <em>開始改變一點點。</em>
               </h2>
-              <div
-                className="portrait-placeholder"
-                role="img"
-                aria-label="抽象肖像佔位圖，尚未加入個人照片"
-              >
-                <span>LEARNING IN PROGRESS</span>
-              </div>
+              <figure className="portrait-placeholder">
+                <img
+                  src="/images/classroom.webp"
+                  alt="Branden 在史瓦帝尼教室進行資訊教育教學"
+                  loading="lazy"
+                  width="1200"
+                  height="900"
+                />
+                <figcaption>ALWAYS A LEARNER / ESWATINI</figcaption>
+              </figure>
             </div>
             <div className="about-body">
               <p className="lead">
-                我是李好，Branden Lee。就讀國立清華大學教育學院學士班。
+                我就讀國立清華大學教育學院，雙專長為永續發展與英語教學。
               </p>
               <p>
-                我關注教育如何連結人與社群，讓學習超越教室與國界。以教育創新為起點，持續探索國際教育、永續發展與社會創新之間的可能。
+                從金門的班級、星光班的課後陪伴，到史瓦帝尼的資訊教室，我持續學習如何回應不同的學習需要。
               </p>
-              <p>這裡收藏我的提問、參與與實踐紀錄，也留下仍在學習的空間。</p>
+              <p>
+                這些現場讓我逐漸相信：好的教育設計，始於願意傾聽。當我們看見人的差異，科技、課程與社群才有機會成為支持學習的橋梁。
+              </p>
               <div className="expertise">
                 <span>EDUCATION</span>
                 <span>SUSTAINABILITY</span>
                 <span>SOCIAL INNOVATION</span>
                 <span>CROSS-CULTURAL LEARNING</span>
               </div>
+              <Link className="text-link" to="/about/">
+                更多關於我 <ArrowUpRight size={16} />
+              </Link>
             </div>
           </div>
         </section>
@@ -358,32 +375,19 @@ export default function App() {
               <em>Always moving.</em>
             </h2>
             <div className="timeline">
-              {[
-                [
-                  "NOW",
-                  "National Tsing Hua University",
-                  "Education · interdisciplinary learning",
-                ],
-                [
-                  "FIELD NOTES",
-                  "International Education",
-                  "International educational service",
-                ],
-                [
-                  "EXPLORING",
-                  "Community & Sustainability",
-                  "Student-led initiatives and teaching practice",
-                ],
-              ].map(([time, title, desc]) => (
-                <div className="timeline-row" key={title}>
-                  <span>{time}</span>
+              {journey.map(({ year, label, title }) => (
+                <Link className="timeline-row" to="/experience/" key={year}>
+                  <span>{year}</span>
                   <div>
-                    <h3>{title}</h3>
-                    <p>{desc}</p>
+                    <h3>{label}</h3>
+                    <p>{title}</p>
                   </div>
                   <ArrowUpRight size={18} />
-                </div>
+                </Link>
               ))}
+              <Link className="text-link" to="/experience/">
+                THE FULL JOURNEY <ArrowUpRight size={16} />
+              </Link>
             </div>
           </div>
         </section>
@@ -396,7 +400,32 @@ export default function App() {
           </h2>
           <p>For collaborations, opportunities, and shared ideas.</p>
           <div className="footer-links">
-            <span>公開聯絡方式確認中</span>
+            <div className="contact-actions">
+              <a
+                className="contact-email"
+                href="mailto:branden200593@gmail.com"
+              >
+                branden200593@gmail.com
+              </a>
+              <button
+                className="copy-email"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      "branden200593@gmail.com",
+                    );
+                    setCopyStatus("已複製");
+                  } catch {
+                    setCopyStatus("請點選電郵連結");
+                  }
+                }}
+              >
+                複製
+              </button>
+              <span className="copy-status" role="status" aria-live="polite">
+                {copyStatus}
+              </span>
+            </div>
             <a href="#home">BACK TO TOP ↑</a>
           </div>
           <div className="footer-bottom">

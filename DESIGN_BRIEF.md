@@ -1,14 +1,35 @@
-# Branden Portfolio — Design brief
+# BRANDEN. — Premium Dark Editorial
 
-Reference direction: cinematic photographic hero (Superpower), editorial typography/white space (Primefold), project exploration (Core-A), oversized photography case-study cards. Do not copy visual assets, branding, or source code.
+Current direction: the owner's Antony-inspired request, 2026-10-16. Borrow
+personal narrative, a clear project index, quiet hierarchy, generous spacing and
+photographic case-study rhythm. Do not copy template source, proprietary images
+or brand text. The Framer marketplace reference was blocked by the cloud proxy;
+the owner's explicit specification guides this implementation.
 
-Colors: warm paper, charcoal, stone, muted moss and terracotta selected around actual photos. No mandatory blue. Typography: modern sans plus restrained editorial italic serif.
+Shared tokens are in src/design-system.css. Primary #08090D, secondary #111827,
+card #252B35, text #F4F5F7, secondary text #9CA3AF, muted #747B89. Photos retain
+natural color. Neutral overlays support legibility; borders replace glow.
 
-## Four phases
-1. Review materials and select imagery. Source: Google Drive `branden-portfolio` and the photo folders under `獎學金申請資料/照片`. Confirm permissions of identifiable students before publishing.
-2. Make site structure and content stable. Pages/sections: Home, interactive Showcase, Projects with detail pages, About, Journey, Contact.
-3. Add and refine animations one at a time: hero reveal, 3D coverflow, project card transitions. Respect `prefers-reduced-motion`, test mobile.
-4. Deploy via GitHub/Netlify and develop content management with authenticated editor, image storage, validation and secure authorization. Do not expose admin without access protection.
+Self-hosted fonts in src/fonts.css: Noto Serif TC Variable (Chinese headings,
+400–500), Instrument Serif (English display, limited italic), Noto Sans TC
+Variable (Chinese body), Inter Variable (UI and English body). Unicode-ranged
+WOFF2 loads only the necessary faces. Display 76–168px, h1 42–96px, h2 48–88px,
+body 16px / ~2 line-height for Chinese, captions 12px, metadata 10px. Mobile
+adjustments preserve reading order, Chinese line breaks and photo crops.
 
-## First iteration status
-Starter prototype created. Uses placeholder artwork and preliminary project descriptions; no verified production imagery or CMS yet. User approval required before public use of project photos and personal contact details.
+Home preserves cinematic Hero, interactive perspective carousel, selected work,
+About, Journey and Contact. Dedicated /about/, /projects/ and /experience/
+provide depth without placing everything on the homepage. Three existing cases
+retain source-backed roles and reflections, with photography between chapters.
+
+Content is typed in src/content/model.ts, projects.ts, drafts.ts and journey.ts.
+Unverified projects remain hidden; no invented outcomes. No new Drive images
+are released without rights review, especially recognizable minors.
+
+The 3D carousel retains pointer, touch and scoped keyboard controls. All motion
+respects prefers-reduced-motion. The local studio preserves IndexedDB drafts,
+image conversion, validation, import/export, ordering and visibility. It is not
+an authenticated shared CMS. No login mock or server writes are implied.
+
+Release policy: independent branch, tested preview on the existing Netlify site,
+then owner review before any production merge or release. Never force push.

@@ -21,8 +21,15 @@
   scripts/deploy-netlify.py targets only codex-preview. Verify actual deployed
   responses and inherited protection; do not manufacture a deployment URL or
   claim readiness from a successful local build.
-- The environment currently blocks Netlify/Drive via proxy 403. Required domains
-  and NETLIFY_AUTH_TOKEN metadata were saved in the environment draft. Values must
-  be entered securely, never in chat or source. Saving a draft does not apply it.
-- After the user updates environment access, retry the affected operation and
-  resume deployment. Do not repeatedly run unchanged denied requests.
+- Netlify API and Drive now work; official Netlify OAuth completed in this session.
+  Session credential material lives outside this repo and must never be logged.
+  GitHub API, Framer reference and WebKit download hosts remain proxy-blocked.
+  Netlify has no Git source linked; do not claim CD until an actual push-triggered
+  build is verified. Production still uses the original Next.js Drop deploy;
+  this candidate preserves its public content on the existing complete Vite source.
+- Dark editorial branch: codex/dark-editorial. Do not merge to main or replace
+  production until the owner reviews. Tag archive/pre-dark-20261016 is the Vite
+  source baseline, not missing Next.js source. Keep normal pushes only.
+- User explicitly requested Antony-inspired information design. Current routes
+  include /about, /projects, /experience, 3 cases and /studio. Use shared tokens
+  and four self-hosted fonts; candidate drafts remain hidden, no invented claims.

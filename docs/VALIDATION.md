@@ -1,49 +1,49 @@
-# Validation — 2026-10-16
+# Validation — Dark Editorial, 2026-10-16
 
-## Executed and passed
+## Executed locally
 
-- npm install: added the router dependency with a lockfile update.
-- npm run build: strict TypeScript + production Vite output passed.
-- npm run test:hmr: actual WebSocket-delivered CSS, component and content updates;
-  carousel state retained, one document load, all source probes restored. Router
-  replaceState is correctly distinguished from an actual document navigation.
-- Production npm run test:browser: 1440, 768, 390, 320 px; rendering, no horizontal
-  overflow, navigation, carousel arrows/keyboard/mouse drag, mobile touch swipe,
-  cancelled gestures, case-page navigation and reduced motion; no browser errors.
-- Production npm run test:routes: all three direct case routes, four content
-  chapters per case, next-story navigation, unknown-route 404/return, real CSS 3D
-  transforms at all four widths; no failed assets or uncaught JS errors.
-- Production npm run test:studio: create/edit, image conversion, rights validation,
-  IndexedDB persistence across reloads, reorder, hide, case preview, valid backup
-  import/export, malicious SVG-import rejection, unsaved-navigation guard,
-  all-hidden state, reset and mobile overflow. No server write requests occurred.
-- Source scan: no private-key/GitHub-token/npm-token patterns in shipped source.
-- python -m py_compile scripts/deploy-netlify.py passed. The live API check exits
-  safely when Netlify authorization is absent; no site was created or changed.
+- Dependencies installed and lockfile updated. npm audit --omit=dev: 0 vulnerabilities.
+- npm run build: ESLint, strict TypeScript and Vite production output passed.
+- HMR: actual CSS/component/content WebSocket updates, retained carousel state,
+  no full reload, no browser errors, all temporary source probes restored.
+- Built-output browser suite: 1440/768/390/320, real perspective, next/previous,
+  scoped keyboard, pointer drag/cancellation, Chromium touch swipes, case links,
+  mobile navigation and reduced motion passed.
+- Case routes: 3 cases × 4 widths, four chapters, next story, unknown-route
+  return, real 3D transforms, no horizontal overflow/asset/JavaScript errors.
+- Editorial: Home/About/Projects/Experience/Eswatini × 4 widths, every image
+  decoded, project/year filters, hidden draft case routes inaccessible,
+  correct dark background, no empty link targets, no white screens.
+- Font verification uses actual Chromium CDP rendered-glyph information:
+  Instrument Serif regular + italic, Noto Serif TC, Noto Sans TC and Inter all
+  rendered as custom fonts; no fallback glyphs in the sampled text nodes.
+- Studio: create/edit, rights gate, raster re-encoding, persistence, reorder,
+  visibility, backup export/import, malicious SVG rejection, all-hidden state,
+  reset, unsaved-navigation guard and mobile overflow; no server writes.
 
-## Practical limits
+The built homepage JavaScript is approximately 140 kB gzip, studio approximately
+5.3 kB gzip. CJK WOFF2 files use Unicode ranges; font files are self-hosted.
+Photo source sizes are roughly 59–303 KiB. These are build/resource observations,
+not a mobile field-performance score or a full accessibility certification.
 
-These are Chromium checks with emulated widths/touch; physical Safari and real
-network performance were not tested. The homepage main bundle is approximately
-135 kB gzip and the studio is a separate approximately 5.3 kB gzip chunk.
-The CSP/security/header files exist in dist; actual Netlify response headers
-cannot be verified before deployment.
+## Compatibility limit
 
-Cases contain clearly marked pending roles/times/results. No personal/student
-photos have been published. Google Drive is blocked by the current environment
-proxy and picture rights have not been reviewed. The studio is an on-device
-editor, not an authenticated shared CMS or public publishing endpoint.
+Playwright WebKit install attempted the official download hosts; this environment
+blocked them with proxy 403. WebKit has not run locally. The committed CI matrix
+includes WebKit but its execution is not claimed until an actual GitHub run is
+observed. Linux WebKit would still not establish a physical Safari/macOS test.
+The Framer reference page was similarly blocked; owner-supplied design rules
+were used rather than claiming a direct template inspection.
 
-## External blocker
+## Netlify verification
 
-The proxy returns CONNECT 403 for api.netlify.com and drive.google.com.
-NETLIFY_AUTH_TOKEN is absent in the running machine; no usable existing binding
-was found before declaring the requirement.
-Required egress domains and the secret requirement have been saved in the draft;
-this does not apply them. Review/save relevant environment settings and supply the
-Netlify credential through the secure field, then retry deployment. Publishing
-the environment snapshot is distinct from deploying the website.
+The direct review deployment must be verified after upload with the actual HTTPS
+response and browser, including all 8 routes, expected commit marker, CSP and
+noindex. Then repeat responsive/editorial checks against the real URL. Production
+must still point to 6ad22e67730850e71cf441c3. See the task report for the actual
+deploy URL/result; local compilation alone is never a deployment success.
 
-No Netlify deployment succeeded, and no public website URL is claimed. The deploy
-helper targets only the existing site's codex-preview alias, preserves production
-and access settings, and requires verification of the resulting URL.
+The local studio remains browser-local, not a shared authenticated CMS.
+Only previously public site photos are retained. Additional Drive photos remain
+unimported and require authorization review; draft candidates contain no
+invented dates, roles or outcomes. See MATERIALS.md.

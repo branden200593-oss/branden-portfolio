@@ -1,10 +1,7 @@
-const { chromium } = require("playwright");
+const { launch } = require("./browser-engine.cjs");
 const assert = require("node:assert/strict");
 (async () => {
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || "/usr/bin/chromium",
-    args: ["--no-sandbox"],
-  });
+  const browser = await launch();
   try {
     const root = (process.env.BASE_URL || "http://127.0.0.1:5173").replace(
       /\/$/,

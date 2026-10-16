@@ -1,11 +1,7 @@
-const { chromium } = require("playwright");
+const { launch, engine } = require("./browser-engine.cjs");
 const assert = require("node:assert/strict");
 (async () => {
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || "/usr/bin/chromium",
-    headless: true,
-    args: ["--no-sandbox"],
-  });
+  const browser = await launch();
   require("node:fs").mkdirSync(".artifacts", { recursive: true });
   const results = [];
   for (const [name, width, height] of [
@@ -88,7 +84,7 @@ const assert = require("node:assert/strict");
     await page.mouse.move(x - 60, y, { steps: 10 });
     await page.mouse.up();
     assert.equal(await label.textContent(), "Eswatini Education Project");
-    if (width <= 900) {
+    if (width <= 900 && engine === "chromium") {
       const cdp = await page.context().newCDPSession(page);
       await cdp.send("Input.dispatchTouchEvent", {
         type: "touchStart",
@@ -133,6 +129,12 @@ const assert = require("node:assert/strict");
           .getAttribute("aria-expanded"),
         "false",
       );
+      await page.waitForURL("**/about/");
+      await page.locator(".about-page h1").waitFor();
+      await page
+        .getByRole("link", { name: "BRANDEN. Home", exact: true })
+        .click();
+      await page.locator(".hero h1").waitFor();
     }
     for (const id of [
       "home",
@@ -164,7 +166,7 @@ const assert = require("node:assert/strict");
         "carousel buttons",
         "keyboard",
         "pointer drag",
-        ...(width <= 900 ? ["touch swipe"] : []),
+        ...(width <= 900 && engine === "chromium" ? ["touch swipe"] : []),
         "cancelled gesture",
         "arrow keys outside carousel",
         "project selection",

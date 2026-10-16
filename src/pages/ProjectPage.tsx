@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { usePortfolio } from "../store/context";
@@ -11,14 +11,15 @@ export default function ProjectPage() {
   const { projects, loading } = usePortfolio();
   const published = projects.filter((p) => p.status === "published");
   const project = published.find((p) => p.slug === slug);
+  const projectName = project?.name;
   useEffect(() => {
-    document.title = project
-      ? `${project.name} — BRANDEN.`
+    document.title = projectName
+      ? `${projectName} — BRANDEN.`
       : "Project — BRANDEN.";
     return () => {
       document.title = "Branden Lee — Portfolio";
     };
-  }, [project?.name]);
+  }, [projectName]);
   if (loading)
     return (
       <main className="page-loading" aria-busy="true">
@@ -27,6 +28,7 @@ export default function ProjectPage() {
     );
   if (!project) return <NotFound />;
   const next = published[(published.indexOf(project) + 1) % published.length];
+  const photographs = project.gallery?.filter((image) => image.approved) ?? [];
   return (
     <>
       <SiteHeader />
@@ -88,20 +90,57 @@ export default function ProjectPage() {
             ["02", "參與與行動", project.actions],
             ["03", "學習與成果", project.learnings],
             ["04", "紀錄與待確認資料", project.evidence],
-          ].map(([number, title, paragraphs]) => (
-            <section className="case-chapter" key={number as string}>
-              <span className="small-label">
-                {number as string} / FIELD NOTES
-              </span>
-              <div>
-                <h2>{title as string}</h2>
-                {(paragraphs as string[]).map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
+          ].map(([number, title, paragraphs], index) => (
+            <Fragment key={number as string}>
+              <section className="case-chapter" key={number as string}>
+                <span className="small-label">
+                  {number as string} / FIELD NOTES
+                </span>
+                <div>
+                  <h2>{title as string}</h2>
+                  {(paragraphs as string[]).map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+              </section>
+              {photographs[index] && (
+                <figure className={`case-inline-photo photo-${index + 1}`}>
+                  <img
+                    src={photographs[index].src}
+                    alt={photographs[index].alt}
+                    loading="lazy"
+                    width="1200"
+                    height="900"
+                  />
+                  <figcaption>
+                    <span>
+                      FROM THE FIELD / {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {photographs[index].alt}
+                  </figcaption>
+                </figure>
+              )}
+            </Fragment>
           ))}
         </div>
+        {photographs.length > 4 && (
+          <section className="case-gallery" aria-label="專案影像紀錄">
+            {photographs.slice(4).map((image, i) => (
+              <figure key={image.src}>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                />
+                <figcaption>
+                  {String(i + 1).padStart(2, "0")} / {image.credit || image.alt}
+                </figcaption>
+              </figure>
+            ))}
+          </section>
+        )}
         {published.length > 1 && (
           <Link
             className={`next-project ${next.tone}`}
