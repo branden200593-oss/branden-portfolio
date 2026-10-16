@@ -38,3 +38,12 @@ previews return an authorization error; automation must preserve protection.
 No tokens are placed in source, scripts, build artifacts, URLs, chat or logs.
 No production branch security, access policy or billing changes are authorized
 implicitly by a successful preview.
+
+## Verified review delivery
+
+Stable protected review: https://codex-preview--branden-portfolio-v1.netlify.app
+First dark-editorial deployment: 6ad23884bd7a780071b7c042, context branch-deploy,
+not published to production. Actual rendered content, expected revision, routes,
+images/fonts and inherited team-login protection were verified. The original
+production deploy remained unchanged. No Git-triggered Netlify build has yet
+been observed; source linking still requires the owner's GitHub application grant.

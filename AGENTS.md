@@ -33,3 +33,10 @@
 - User explicitly requested Antony-inspired information design. Current routes
   include /about, /projects, /experience, 3 cases and /studio. Use shared tokens
   and four self-hosted fonts; candidate drafts remain hidden, no invented claims.
+- Chromium and WebKit CI passed (run 38919103438, 3f845da). Local WebKit
+  download remains blocked; do not confuse Linux WebKit with real Safari.
+- Protected review codex-preview--branden-portfolio-v1.netlify.app was actually
+  rendered and tested. Anonymous access redirects to Netlify login. Preserve it.
+  Browser proxy CA import was rejected by auto-review; do not retry/disable TLS.
+  External checks used an authenticated official edge-access session and
+  certificate-verified API transport; browser-side TLS was not independently tested.

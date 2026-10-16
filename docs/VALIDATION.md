@@ -28,20 +28,34 @@ not a mobile field-performance score or a full accessibility certification.
 
 ## Compatibility limit
 
-Playwright WebKit install attempted the official download hosts; this environment
-blocked them with proxy 403. WebKit has not run locally. The committed CI matrix
-includes WebKit but its execution is not claimed until an actual GitHub run is
-observed. Linux WebKit would still not establish a physical Safari/macOS test.
+The cloud's local WebKit download was blocked by proxy 403. Both Chromium and
+WebKit subsequently ran and passed in GitHub Actions at commit 3f845da:
+https://github.com/branden200593-oss/branden-portfolio/actions/runs/38919103438
+Both jobs succeeded; artifacts were retained. The initial run had an unsuccessful
+WebKit step without accessible logs; diagnostic reporting and artifact retention
+were added before the successful run. No claim is made about that initial cause.
+Linux WebKit does not establish a physical Safari/macOS test.
 The Framer reference page was similarly blocked; owner-supplied design rules
 were used rather than claiming a direct template inspection.
 
 ## Netlify verification
 
-The direct review deployment must be verified after upload with the actual HTTPS
-response and browser, including all 8 routes, expected commit marker, CSP and
-noindex. Then repeat responsive/editorial checks against the real URL. Production
-must still point to 6ad22e67730850e71cf441c3. See the task report for the actual
-deploy URL/result; local compilation alone is never a deployment success.
+The actual protected review at
+https://codex-preview--branden-portfolio-v1.netlify.app was uploaded and rendered:
+8 direct routes passed at the expected commit, with CSP/noindex; all 4 widths,
+3D interactions, editorial fonts/images, case routes and local studio passed.
+Production still pointed to 6ad22e67730850e71cf441c3 after deployment.
+Unauthenticated review access returns 401 and Netlify's official login redirect.
+The existing account's Netlify authorization was used with the official
+/auth/edge-access and /.netlify/login-helper flow; access policies were unchanged.
+
+The cloud Chromium did not trust the environment proxy's CA. Persistently adding
+that CA was rejected by automatic approval review; no certificate store was
+changed. For external rendering only, requests used Playwright's API transport
+through the environment proxy with TLS certificate verification, then passed the
+responses to Chromium at the real origin. This verifies deployed content and
+browser behavior, not an independent browser-side TLS handshake or Mac Safari.
+Ordinary direct browser checks ran locally and in GitHub CI.
 
 The local studio remains browser-local, not a shared authenticated CMS.
 Only previously public site photos are retained. Additional Drive photos remain
